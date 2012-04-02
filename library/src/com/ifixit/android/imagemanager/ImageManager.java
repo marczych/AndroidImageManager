@@ -21,6 +21,14 @@ import android.widget.ImageView;
  * asynchronous-lazy-loading-and-caching-of-listview-images/
  */
 public class ImageManager {
+   public interface Controller {
+      public boolean overrideDisplay(String url, ImageView imageView);
+
+      public void loading(ImageView imageView);
+
+      public void fail(ImageView imageView);
+   }
+
    private static final int IMAGE_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
    private static final int DEFAULT_MAX_STORED_IMAGES = 10;
    private static final int DEFAULT_MAX_LOADING_IMAGES = 9;
@@ -28,6 +36,7 @@ public class ImageManager {
    private static final int DEFAULT_NUM_DOWNLOAD_THREADS = 5;
    private static final int DEFAULT_NUM_WRITE_THREADS = 2;
 
+   private Controller mController;
    private HashMap<String, ImageRef> mLoadingImages;
    private LinkedList<SoftReference<StoredBitmap>> mWriteQueue;
    private LinkedList<StoredBitmap> mRecentImages;
@@ -77,15 +86,32 @@ public class ImageManager {
       }
    }
 
+   public void setController(Controller controller) {
+      mController = controller;
+   }
+
    public void displayImage(String url, Activity activity,
     ImageView imageView) {
+      if (mController != null && mController.overrideDisplay(url, imageView)) {
+         return;
+      }
+
       StoredBitmap storedBitmap = new StoredBitmap(null, url);
       int index = mRecentImages.indexOf(storedBitmap);
 
       if (index != -1) {
-         imageView.setImageBitmap(mRecentImages.get(index).mBitmap);
+         Bitmap bitmap = mRecentImages.get(index).mBitmap;
+
+         if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+         } else if (mController != null) {
+            mController.fail(imageView);
+         }
       } else {
-         imageView.setImageBitmap(null);
+         if (mController != null) {
+            mController.loading(imageView);
+         }
+
          imageView.setTag(R.id.image_tag, url);
          queueImage(url, activity, imageView);
       }
@@ -182,8 +208,7 @@ public class ImageManager {
          addToWriteQueue(new StoredBitmap(bitmap, url));
 
          return bitmap;
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
          return null;
       }
    }
@@ -206,16 +231,13 @@ public class ImageManager {
       try {
          out = new FileOutputStream(file);
          bitmap.compress(Bitmap.CompressFormat.PNG, 80, out);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
          Log.e("ImageManager", "writeFile: " + e.getMessage());
-      }
-      finally {
+      } finally {
          try {
             if (out != null)
                out.close();
-         }
-         catch (Exception ex) {}
+         } catch (Exception ex) {}
       }
    }
 
@@ -294,13 +316,15 @@ public class ImageManager {
          try {
             while (true) {
                synchronized (mImageQueue.imageRefs) {
-                  if (mImageQueue.imageRefs.size() == 0)
+                  if (mImageQueue.imageRefs.size() == 0) {
                      mImageQueue.imageRefs.wait();
+                  }
                }
 
                synchronized (mImageQueue.imageRefs) {
-                  if (mImageQueue.imageRefs.size() == 0)
+                  if (mImageQueue.imageRefs.size() == 0) {
                      continue;
+                  }
 
                   imageToLoad = mImageQueue.imageRefs.removeFirst();
                   synchronized (mLoadingImages) {
@@ -379,10 +403,11 @@ public class ImageManager {
                   image.setImageBitmap(mBitmap);
                }
             }
-         }
-         else {
-            for (ImageView image : mImageViews) {
-               //TODO
+         } else {
+            if (mController != null) {
+               for (ImageView image : mImageViews) {
+                  mController.fail(image);
+               }
             }
          }
 

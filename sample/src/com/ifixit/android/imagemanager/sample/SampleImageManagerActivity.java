@@ -69,10 +69,17 @@ public class SampleImageManagerActivity extends ListActivity {
       }
 
       private void initImageUrls() {
+         String url;
          mImageUrls = new ArrayList<String>();
 
          for (int i = 10; i < 25; i ++) {
-            mImageUrls.add(BASE_IMAGE_URL + i + ".jpg");
+            if (i == 15) {
+               url = "jkdfj;kwjekf"; // Oops.
+            } else {
+               url = BASE_IMAGE_URL + i + ".jpg";
+            }
+
+            mImageUrls.add(url);
          }
       }
    }
