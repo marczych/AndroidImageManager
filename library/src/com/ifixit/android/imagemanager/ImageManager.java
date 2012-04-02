@@ -26,6 +26,9 @@ public class ImageManager {
 
       public void loading(ImageView imageView);
 
+      public boolean displayImage(ImageView imageView, Bitmap bitmap,
+       String url);
+
       public void fail(ImageView imageView);
    }
 
@@ -103,7 +106,7 @@ public class ImageManager {
          Bitmap bitmap = mRecentImages.get(index).mBitmap;
 
          if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
+            displayImage(imageView, bitmap, url);
          } else if (mController != null) {
             mController.fail(imageView);
          }
@@ -114,6 +117,13 @@ public class ImageManager {
 
          imageView.setTag(R.id.image_tag, url);
          queueImage(url, activity, imageView);
+      }
+   }
+
+   private void displayImage(ImageView imageView, Bitmap bitmap, String url) {
+      if (mController != null && !mController.displayImage(imageView, bitmap,
+       url)) {
+         imageView.setImageBitmap(bitmap);
       }
    }
 
@@ -400,7 +410,7 @@ public class ImageManager {
          if (mBitmap != null) {
             for (ImageView image : mImageViews) {
                if (image.getTag(R.id.image_tag).equals(mUrl)) {
-                  image.setImageBitmap(mBitmap);
+                  displayImage(image, mBitmap, mUrl);
                }
             }
          } else {

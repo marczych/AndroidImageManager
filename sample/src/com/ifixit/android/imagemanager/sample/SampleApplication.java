@@ -1,6 +1,8 @@
 package com.ifixit.android.imagemanager.sample;
 
 import android.app.Application;
+
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.ifixit.android.imagemanager.ImageManager;
@@ -24,6 +26,15 @@ public class SampleApplication extends Application {
 
             public void loading(ImageView imageView) {
                imageView.setImageResource(R.drawable.loading);
+            }
+
+            public boolean displayImage(ImageView imageView, Bitmap bitmap,
+             String url) {
+               if (url.contains("3")) {
+                  return true;
+               }
+
+               return false;
             }
 
             public void fail(ImageView imageView) {
