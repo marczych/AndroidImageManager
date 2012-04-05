@@ -99,25 +99,29 @@ public class ImageManager {
          return;
       }
 
-      StoredBitmap storedBitmap = new StoredBitmap(null, url);
-      int index = mRecentImages.indexOf(storedBitmap);
+      synchronized (mRecentImages) {
+         StoredBitmap storedBitmap = new StoredBitmap(null, url);
+         int index = mRecentImages.indexOf(storedBitmap);
 
-      if (index != -1) {
-         Bitmap bitmap = mRecentImages.get(index).mBitmap;
+         if (index != -1) {
+            Bitmap bitmap = mRecentImages.get(index).mBitmap;
 
-         if (bitmap != null) {
-            displayImage(imageView, bitmap, url);
-         } else if (mController != null) {
-            mController.fail(imageView);
+            if (bitmap != null) {
+               displayImage(imageView, bitmap, url);
+            } else if (mController != null) {
+               mController.fail(imageView);
+            }
+
+            return;
          }
-      } else {
-         if (mController != null) {
-            mController.loading(imageView);
-         }
-
-         imageView.setTag(R.id.image_tag, url);
-         queueImage(url, activity, imageView);
       }
+
+      if (mController != null) {
+         mController.loading(imageView);
+      }
+
+      imageView.setTag(R.id.image_tag, url);
+      queueImage(url, activity, imageView);
    }
 
    private void displayImage(ImageView imageView, Bitmap bitmap, String url) {
