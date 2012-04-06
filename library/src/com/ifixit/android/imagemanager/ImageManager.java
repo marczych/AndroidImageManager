@@ -44,7 +44,7 @@ public class ImageManager {
    private LinkedList<SoftReference<StoredBitmap>> mWriteQueue;
    private LinkedList<StoredBitmap> mRecentImages;
    private File mCacheDir;
-   private ImageQueue mImageQueue;
+   private LinkedList<ImageRef> mImageQueue;
    private Thread[] mDownloadThreads;
    private Thread[] mWriteThreads;
    private int mMaxLoadingImages;
@@ -62,7 +62,7 @@ public class ImageManager {
       mNumWriteThreads = writeThreads;
       mWriteQueue = new LinkedList<SoftReference<StoredBitmap>>();
       mRecentImages = new LinkedList<StoredBitmap>();
-      mImageQueue = new ImageQueue();
+      mImageQueue = new LinkedList<ImageRef>();
       mDownloadThreads = new Thread[mNumDownloadThreads];
       mWriteThreads = new Thread[mNumWriteThreads];
       mLoadingImages = new HashMap<String, ImageRef>();
@@ -143,8 +143,8 @@ public class ImageManager {
          }
       }
 
-      synchronized (mImageQueue.imageRefs) {
-         for (ImageRef image : mImageQueue.imageRefs) {
+      synchronized (mImageQueue) {
+         for (ImageRef image : mImageQueue) {
             if (image.getUrl().equals(url)) {
                image.addImage(imageView);
                return;
@@ -153,12 +153,12 @@ public class ImageManager {
 
          imageRef = new ImageRef(url, imageView);
 
-         while (mImageQueue.imageRefs.size() >= mMaxLoadingImages) {
-            mImageQueue.imageRefs.removeLast();
+         while (mImageQueue.size() >= mMaxLoadingImages) {
+            mImageQueue.removeLast();
          }
 
-         mImageQueue.imageRefs.addFirst(imageRef);
-         mImageQueue.imageRefs.notify();
+         mImageQueue.addFirst(imageRef);
+         mImageQueue.notify();
       }
    }
 
@@ -185,9 +185,9 @@ public class ImageManager {
    public void setMaxLoadingImages(int max) {
       mMaxLoadingImages = max;
 
-      synchronized (mImageQueue.imageRefs) {
-         while (mImageQueue.imageRefs.size() >= mMaxLoadingImages) {
-            mImageQueue.imageRefs.removeLast();
+      synchronized (mImageQueue) {
+         while (mImageQueue.size() >= mMaxLoadingImages) {
+            mImageQueue.removeLast();
          }
       }
    }
@@ -315,10 +315,6 @@ public class ImageManager {
       }
    }
 
-   private class ImageQueue {
-      public LinkedList<ImageRef> imageRefs = new LinkedList<ImageRef>();
-   }
-
    private class ImageQueueManager implements Runnable {
       @Override
       public void run() {
@@ -329,18 +325,18 @@ public class ImageManager {
 
          try {
             while (true) {
-               synchronized (mImageQueue.imageRefs) {
-                  if (mImageQueue.imageRefs.size() == 0) {
-                     mImageQueue.imageRefs.wait();
+               synchronized (mImageQueue) {
+                  if (mImageQueue.size() == 0) {
+                     mImageQueue.wait();
                   }
                }
 
-               synchronized (mImageQueue.imageRefs) {
-                  if (mImageQueue.imageRefs.size() == 0) {
+               synchronized (mImageQueue) {
+                  if (mImageQueue.size() == 0) {
                      continue;
                   }
 
-                  imageToLoad = mImageQueue.imageRefs.removeFirst();
+                  imageToLoad = mImageQueue.removeFirst();
                   synchronized (mLoadingImages) {
                      mLoadingImages.put(imageToLoad.getUrl(), imageToLoad);
                   }
