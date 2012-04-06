@@ -203,7 +203,7 @@ public class ImageManager {
    }
 
    private String getFileName(String url) {
-      return String.valueOf(url.hashCode()) + ".png";
+      return String.valueOf(url.hashCode());
    }
 
    private Bitmap getBitmap(String url) {
