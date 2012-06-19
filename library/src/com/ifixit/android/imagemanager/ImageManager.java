@@ -108,11 +108,9 @@ public class ImageManager {
 
             if (bitmap != null) {
                displayImage(imageView, bitmap, url);
-            } else if (mController != null) {
-               mController.fail(imageView);
-            }
 
-            return;
+               return;
+            }
          }
       }
 
