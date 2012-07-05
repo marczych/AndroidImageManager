@@ -254,22 +254,24 @@ public class ImageManager {
    }
 
    private void storeImage(String url, Bitmap bitmap) {
-      StoredBitmap storedBitmap = new StoredBitmap(null, url);
-      int index = mRecentImages.indexOf(storedBitmap);
+      synchronized (mRecentImages) {
+         StoredBitmap storedBitmap = new StoredBitmap(null, url);
+         int index = mRecentImages.indexOf(storedBitmap);
 
-      // Already in list, lets move it to the front
-      if (index != -1) {
-         storedBitmap = mRecentImages.get(index);
-         mRecentImages.remove(index);
-      } else {
-         storedBitmap.mBitmap = bitmap;
+         // Already in list, lets move it to the front
+         if (index != -1) {
+            storedBitmap = mRecentImages.get(index);
+            mRecentImages.remove(index);
+         } else {
+            storedBitmap.mBitmap = bitmap;
+         }
+
+         while (mRecentImages.size() >= mMaxStoredImages) {
+            mRecentImages.removeLast();
+         }
+
+         mRecentImages.addFirst(new StoredBitmap(bitmap, url));
       }
-
-      while (mRecentImages.size() >= mMaxStoredImages) {
-         mRecentImages.removeLast();
-      }
-
-      mRecentImages.addFirst(new StoredBitmap(bitmap, url));
    }
 
    private class StoredBitmap {
