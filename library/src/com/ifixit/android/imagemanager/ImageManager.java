@@ -95,6 +95,8 @@ public class ImageManager {
 
    public void displayImage(String url, Activity activity,
     ImageView imageView) {
+      imageView.setTag(R.id.image_tag, url);
+
       if (mController != null && mController.overrideDisplay(url, imageView)) {
          return;
       }
@@ -118,7 +120,6 @@ public class ImageManager {
          mController.loading(imageView);
       }
 
-      imageView.setTag(R.id.image_tag, url);
       queueImage(url, activity, imageView);
    }
 
@@ -416,7 +417,9 @@ public class ImageManager {
          } else {
             if (mController != null) {
                for (ImageView image : mImageViews) {
-                  mController.fail(image);
+                  if (image.getTag(R.id.image_tag).equals(mUrl)) {
+                     mController.fail(image);
+                  }
                }
             }
          }
