@@ -1,11 +1,11 @@
-package com.ifixit.android.imagemanager.sample;
+package com.marczych.androidimagemanager.sample;
 
 import android.app.Application;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import com.ifixit.android.imagemanager.ImageManager;
+import com.marczych.androidimagemanager.ImageManager;
 
 public class SampleApplication extends Application {
    private ImageManager mImageManager;

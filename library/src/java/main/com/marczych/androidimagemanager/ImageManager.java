@@ -1,4 +1,4 @@
-package com.ifixit.android.imagemanager;
+package com.marczych.androidimagemanager;
 
 import java.io.File;
 import java.io.FileOutputStream;

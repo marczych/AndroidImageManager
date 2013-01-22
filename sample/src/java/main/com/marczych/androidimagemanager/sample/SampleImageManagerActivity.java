@@ -1,8 +1,8 @@
-package com.ifixit.android.imagemanager.sample;
+package com.marczych.androidimagemanager.sample;
 
 import java.util.ArrayList;
 
-import com.ifixit.android.imagemanager.ImageManager;
+import com.marczych.androidimagemanager.ImageManager;
 
 import android.app.Activity;
 import android.app.ListActivity;
