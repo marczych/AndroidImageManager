@@ -20,3 +20,6 @@ local.properties
 
 .metadata
 .settings/
+
+# Maven ignores
+target/
