@@ -13,6 +13,8 @@ public class SampleApplication extends Application {
    public ImageManager getImageManager() {
       if (mImageManager == null) {
          mImageManager = new ImageManager(this);
+         mImageManager.trustAllCerts(true);
+         mImageManager.trustAllHosts(true);
 
          mImageManager.setController(new ImageManager.Controller() {
             public boolean overrideDisplay(String url, ImageView imageView) {

@@ -52,6 +52,8 @@ public class ImageManager {
    private int mMaxLoadingImages;
    private int mMaxStoredImages;
    private int mMaxWritingImages;
+   private boolean mTrustAllCerts = false;
+   private boolean mTrustAllHosts = false;
    private final int mNumDownloadThreads;
    private final int mNumWriteThreads;
 
@@ -89,6 +91,14 @@ public class ImageManager {
       if (!mCacheDir.exists()) {
          mCacheDir.mkdirs();
       }
+   }
+
+   public void trustAllCerts(boolean trustAllCerts) {
+      mTrustAllCerts = trustAllCerts;
+   }
+
+   public void trustAllHosts(boolean trustAllHosts) {
+      mTrustAllHosts = trustAllHosts;
    }
 
    public void setController(Controller controller) {
@@ -218,6 +228,14 @@ public class ImageManager {
 
       try {
          HttpRequest request = HttpRequest.get(url);
+
+         if (mTrustAllCerts) {
+            request.trustAllCerts();
+         }
+         if (mTrustAllHosts) {
+            request.trustAllHosts();
+         }
+
          bitmap = BitmapFactory.decodeStream(request.stream());
          addToWriteQueue(new StoredBitmap(bitmap, url));
 
