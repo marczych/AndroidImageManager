@@ -223,6 +223,7 @@ public class ImageManager {
 
          return bitmap;
       } catch (Exception e) {
+         Log.e("ImageManager", "getBitmap", e);
          return null;
       }
    }
@@ -246,12 +247,12 @@ public class ImageManager {
          out = new FileOutputStream(file);
          bitmap.compress(Bitmap.CompressFormat.PNG, 80, out);
       } catch (Exception e) {
-         Log.e("ImageManager", "writeFile: " + e.getMessage());
+         Log.e("ImageManager", "writeFile", e);
       } finally {
          try {
             if (out != null)
                out.close();
-         } catch (Exception ex) {}
+         } catch (Exception e) {}
       }
    }
 
@@ -358,8 +359,9 @@ public class ImageManager {
                activity = null;
                bitmapDisplayer = null;
             }
+         } catch (InterruptedException e) {
+            Log.w("ImageManager", "ImageQueue", e);
          }
-         catch (InterruptedException e) {}
       }
    }
 
@@ -392,7 +394,9 @@ public class ImageManager {
 
                bitmapFile = null;
             }
-         } catch (InterruptedException e) {}
+         } catch (InterruptedException e) {
+            Log.w("ImageManager", "ImageQueue", e);
+         }
       }
    }
 
