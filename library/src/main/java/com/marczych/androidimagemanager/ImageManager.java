@@ -15,6 +15,8 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.github.kevinsawicki.http.HttpRequest;
+
 /**
  * Based largely on cacois's example:
  * http://codehenge.net/blog/2011/06/android-development-tutorial-
@@ -208,7 +210,6 @@ public class ImageManager {
    private Bitmap getBitmap(String url) {
       String filename = getFileName(url);
       File file = new File(mCacheDir, filename);
-      URLConnection connection;
       Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
 
       if (bitmap != null) {
@@ -216,8 +217,8 @@ public class ImageManager {
       }
 
       try {
-         connection = new URL(url).openConnection();
-         bitmap = BitmapFactory.decodeStream(connection.getInputStream());
+         HttpRequest request = HttpRequest.get(url);
+         bitmap = BitmapFactory.decodeStream(request.stream());
          addToWriteQueue(new StoredBitmap(bitmap, url));
 
          return bitmap;

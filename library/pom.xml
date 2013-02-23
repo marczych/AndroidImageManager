@@ -19,6 +19,11 @@
          <version>${android.version}</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>com.github.kevinsawicki</groupId>
+         <artifactId>http-request</artifactId>
+         <version>4.0</version>
+      </dependency>
    </dependencies>
 
    <build>
