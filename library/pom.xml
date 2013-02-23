@@ -5,11 +5,10 @@
    <parent>
       <groupId>com.marczych.androidimagemanager</groupId>
       <artifactId>parent</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
    </parent>
 
    <artifactId>android-image-manager</artifactId>
-   <version>1.0.0</version>
    <packaging>apklib</packaging>
 
    <dependencies>
