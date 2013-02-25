@@ -10,7 +10,7 @@
    <parent>
       <groupId>com.marczych.androidimagemanager</groupId>
       <artifactId>parent</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
    </parent>
 
    <dependencies>
@@ -24,7 +24,7 @@
       <dependency>
          <groupId>com.marczych.androidimagemanager</groupId>
          <artifactId>android-image-manager</artifactId>
-         <version>1.0.0</version>
+         <version>1.0.1</version>
          <type>apklib</type>
       </dependency>
    </dependencies>
